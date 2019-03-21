@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load bootstrap3 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="utf-8">
+    <title>Guest Manage Page</title>
+</head>
+<div style="float:right;">
+    <a>嘿！{{ user }} 欢迎</a>
+    <hr/>
+</div>
+<body role="document">
+<!-- 导航栏 -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/event_manage/">Guest Manage System</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="/event_manage/">发布会</a>
+                <li>
+                <li class="active"><a href="/guest_manage/">嘉宾</a>
+                <li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">{{ user }}</a></li>
+                <li><a href="/logout/">退出</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 嘉宾搜索表单 -->
+<div class="page-header" style="padding-top: 60px;">
+    <div id="navbar" class="navbar-collapse collapse">
+        <!-- 为了和发布会表的搜索不冲突，修改action路径为search_realname -->
+        <form class="navbar-form" method="get" action="/search_realname/">
+            <div class="form-group">
+                <!-- 注意这里需要将name设置为realname匹配guest表里的字段 -->
+                <input name="realname" type="text" placeholder="名称" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">搜索</button>
+        </form>
+    </div>
+</div>
+
+<!-- 嘉宾列表 -->
+<div class="row" style="padding-top: 80px;">
+    <div class="col-md-7">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>id</th>
+                <th>名称</th>
+                <th>手机</th>
+                <th>Email</th>
+                <th>签到</th>
+                <th>发布会</th>
+            </tr>
+            </thead>
+            <tbody>
+            <!-- 通过Django模板语言for循环读取嘉宾列表，并显示id、realname等字段 -->
+            {% for guest in guests %}
+                <tr>
+                    <td>{{ guest.id }}</td>
+                    <td>{{ guest.realname }}</td>
+                    <td>{{ guest.phone }}</td>
+                    <td>{{ guest.email }}</td>
+                    <td>{{ guest.sign }}</td>
+                    <td>{{ guest.event }}</td
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- 列表分页器 -->
+<div class="pagination">
+    <span class="step-links">
+    <!-- 如果搜索名称为真则代表使用了嘉宾搜索功能，则展示搜索后的分页 -->
+        {% if search_realname %}
+            {% if guests.has_previous %}
+                <!-- 这里对返回给guest_manage.html的URL增加了一个realname值为搜索的嘉宾名 -->
+                <a href="?page={{ guests.previous_page_number }}&realname={{ search_realname }}">上一页</a>
+            {% endif %}
+            <!-- 这里依然还是展示当前页和总页数 -->
+            <span class="current">
+                        Page {{ guests.number }} of {{ guests.paginator.num_pages }}.
+                    </span>
+            {% if guests.has_next %}
+                <!-- 同样这里也是增加了返回值realname为搜索的嘉宾名，只有这两个约束条件同时满足才能保证分页是针对嘉宾搜索结果的 -->
+                <a href="?page={{ guests.next_page_number }}&realname={{ search_realname }}">下一页</a>
+            {% endif %}
+            <!-- 如果search_name为False，则代表并没有使用嘉宾搜索功能，那么下面就正常展示嘉宾列表的搜索页和分页器 -->
+        {% else %}
+            {% if guests.has_previous %}
+                <a href="?page={{ guests.previous_page_number }}">上一页</a>
+            {% endif %}
+            <span class="current">
+                        Page {{ guests.number }} of {{ guests.paginator.num_pages }}.
+                    </span>
+            {% if guests.has_next %}
+                <a href="?page={{ guests.next_page_number }}">下一页</a>
+            {% endif %}
+        {% endif %}
+    </span>
+</div>
+</body>
+</html>

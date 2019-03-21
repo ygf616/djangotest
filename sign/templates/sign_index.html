@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load bootstrap3 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <meta charset="utf-8">
+    <title>签到页面</title>
+</head>
+<body>
+<!-- 导航栏 -->
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/event_manage/">Event Manage System</a>
+        </div>
+        <div id="navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="/event_manage/">发布会</a>
+                <li>
+                <li><a href="/guest_manage/">嘉宾</a>
+                <li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">{{ user }}</a></li>
+                <li><a href="/logout/">退出</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 签到功能 -->
+<div class="page-header" style="padding-top: 80px;">
+    <div id="navbar" class="navbar-collapse collapse">
+        <h3>{{ event.name }}发布会签到:</h3>
+        <!-- 签到表单通过POST请求将签到手机号提交到/sign_index_action/{{ event.id }}路径，{{ event.id }}会替换为发布会的id -->
+        <form class="navbar-form" method="post" action="/sign_index_action/{{ event.id }}/">
+            <div class="form-group">
+                <input name="phone" type="text" placeholder="输入手机号" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-success">签到</button>
+            {% csrf_token %}
+            <!-- 用于显示签到成功和失败的提示信息 -->
+            <br style="color: red">{{ hint }}
+            <!-- 当签到成功，会显示嘉宾名 -->
+            <br style="color: green">{{ guest.realname }}
+            <!-- 当签到成功，会显示嘉宾手机号 -->
+            <br style="color: green">{{ guest.phone }}
+        </form>
+    </div>
+    <div>
+        嘉宾总数：{{ guest_list }}已签到总数：{{ guest_sign }}
+    </div>
+</div>
+</body>
+</html>
